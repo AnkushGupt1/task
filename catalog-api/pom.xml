@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.trainingplatform</groupId>
-        <artifactId>training-platform</artifactId>
+        <groupId>com.test</groupId>
+        <artifactId>take-home-exercise</artifactId>
         <version>1.0.0</version>
     </parent>
 
@@ -18,7 +18,7 @@
          No Spring, no JPA: consumers put this on their classpath without inheriting catalog internals. -->
     <dependencies>
         <dependency>
-            <groupId>com.trainingplatform</groupId>
+            <groupId>com.test</groupId>
             <artifactId>common</artifactId>
         </dependency>
     </dependencies>

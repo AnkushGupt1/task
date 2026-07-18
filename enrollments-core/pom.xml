@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.trainingplatform</groupId>
-        <artifactId>training-platform</artifactId>
+        <groupId>com.test</groupId>
+        <artifactId>take-home-exercise</artifactId>
         <version>1.0.0</version>
     </parent>
 
@@ -17,19 +17,19 @@
     <dependencies>
         <!-- Own contract: publishes EnrollmentCreatedEvent. -->
         <dependency>
-            <groupId>com.trainingplatform</groupId>
+            <groupId>com.test</groupId>
             <artifactId>enrollments-api</artifactId>
         </dependency>
 
         <!-- Cross-domain SYNC seam: reads course state through catalog-api ONLY.
              Note this is catalog-*api*, never catalog-core. -->
         <dependency>
-            <groupId>com.trainingplatform</groupId>
+            <groupId>com.test</groupId>
             <artifactId>catalog-api</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.trainingplatform</groupId>
+            <groupId>com.test</groupId>
             <artifactId>common</artifactId>
         </dependency>
 

@@ -1,6 +1,6 @@
 spring:
   application:
-    name: training-platform
+    name: take-home-exercise
 
   datasource:
     # In-memory H2 for the exercise. Swap this block for a Postgres URL and the app is unchanged;

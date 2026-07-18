@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.trainingplatform</groupId>
-        <artifactId>training-platform</artifactId>
+        <groupId>com.test</groupId>
+        <artifactId>take-home-exercise</artifactId>
         <version>1.0.0</version>
     </parent>
 
@@ -17,17 +17,17 @@
     <dependencies>
         <!-- The app is the ONLY module that depends on -core modules; it assembles them. -->
         <dependency>
-            <groupId>com.trainingplatform</groupId>
+            <groupId>com.test</groupId>
             <artifactId>catalog-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.trainingplatform</groupId>
+            <groupId>com.test</groupId>
             <artifactId>enrollments-core</artifactId>
         </dependency>
         <!-- Extensibility probe: notifications was added by dropping this one dependency in
              (plus the Flyway location below). No enrollments-core source changed. -->
         <dependency>
-            <groupId>com.trainingplatform</groupId>
+            <groupId>com.test</groupId>
             <artifactId>notifications-core</artifactId>
         </dependency>
 

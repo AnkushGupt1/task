@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.trainingplatform</groupId>
-        <artifactId>training-platform</artifactId>
+        <groupId>com.test</groupId>
+        <artifactId>take-home-exercise</artifactId>
         <version>1.0.0</version>
     </parent>
 
@@ -18,7 +18,7 @@
          without enrollments-core needing to know it exists. -->
     <dependencies>
         <dependency>
-            <groupId>com.trainingplatform</groupId>
+            <groupId>com.test</groupId>
             <artifactId>common</artifactId>
         </dependency>
     </dependencies>

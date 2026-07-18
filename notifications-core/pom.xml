@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.trainingplatform</groupId>
-        <artifactId>training-platform</artifactId>
+        <groupId>com.test</groupId>
+        <artifactId>take-home-exercise</artifactId>
         <version>1.0.0</version>
     </parent>
 
@@ -17,19 +17,19 @@
     <dependencies>
         <!-- Own contracts (channel SPI, message DTO, read seam). -->
         <dependency>
-            <groupId>com.trainingplatform</groupId>
+            <groupId>com.test</groupId>
             <artifactId>notifications-api</artifactId>
         </dependency>
 
         <!-- Subscribe to the enrollments domain event. Note: enrollments-*api*, never -core. -->
         <dependency>
-            <groupId>com.trainingplatform</groupId>
+            <groupId>com.test</groupId>
             <artifactId>enrollments-api</artifactId>
         </dependency>
 
         <!-- The DomainEventHandler seam. -->
         <dependency>
-            <groupId>com.trainingplatform</groupId>
+            <groupId>com.test</groupId>
             <artifactId>common</artifactId>
         </dependency>
 

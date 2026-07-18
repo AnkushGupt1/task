@@ -11,12 +11,12 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.trainingplatform</groupId>
-    <artifactId>training-platform</artifactId>
+    <groupId>com.test</groupId>
+    <artifactId>take-home-exercise</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
-    <name>training-platform</name>
-    <description>Tiny training platform: catalog + enrollments, split into api/core modules</description>
+    <name>Take-Home Exercise</name>
+    <description>Take-Home Exercise — a tiny training-platform slice: catalog + enrollments, split into api/core modules</description>
 
     <!--
       Module layout. Each business domain is a pair of modules:
@@ -53,37 +53,37 @@
         <dependencies>
             <!-- Internal modules, versioned once here so children omit versions. -->
             <dependency>
-                <groupId>com.trainingplatform</groupId>
+                <groupId>com.test</groupId>
                 <artifactId>common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.trainingplatform</groupId>
+                <groupId>com.test</groupId>
                 <artifactId>catalog-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.trainingplatform</groupId>
+                <groupId>com.test</groupId>
                 <artifactId>catalog-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.trainingplatform</groupId>
+                <groupId>com.test</groupId>
                 <artifactId>enrollments-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.trainingplatform</groupId>
+                <groupId>com.test</groupId>
                 <artifactId>enrollments-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.trainingplatform</groupId>
+                <groupId>com.test</groupId>
                 <artifactId>notifications-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.trainingplatform</groupId>
+                <groupId>com.test</groupId>
                 <artifactId>notifications-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
