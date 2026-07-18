@@ -37,6 +37,9 @@
         <module>enrollments-api</module>
         <module>enrollments-core</module>
 
+        <module>notifications-api</module>
+        <module>notifications-core</module>
+
         <module>app</module>
     </modules>
 
@@ -72,6 +75,16 @@
             <dependency>
                 <groupId>com.trainingplatform</groupId>
                 <artifactId>enrollments-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.trainingplatform</groupId>
+                <artifactId>notifications-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.trainingplatform</groupId>
+                <artifactId>notifications-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

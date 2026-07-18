@@ -24,6 +24,12 @@
             <groupId>com.trainingplatform</groupId>
             <artifactId>enrollments-core</artifactId>
         </dependency>
+        <!-- Extensibility probe: notifications was added by dropping this one dependency in
+             (plus the Flyway location below). No enrollments-core source changed. -->
+        <dependency>
+            <groupId>com.trainingplatform</groupId>
+            <artifactId>notifications-core</artifactId>
+        </dependency>
 
         <!-- Runtime infrastructure lives here, not in the domains. -->
         <dependency>

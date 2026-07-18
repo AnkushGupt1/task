@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.trainingplatform</groupId>
+        <artifactId>training-platform</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>notifications-api</artifactId>
+    <name>notifications-api</name>
+    <description>Notifications contracts: the channel SPI, the message DTO, and a read seam.</description>
+
+    <!-- Pure JDK. This -api has zero dependencies (not even common): notifications is a terminal
+         consumer, it publishes no events of its own. -->
+
+</project>
