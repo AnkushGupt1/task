@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.trainingplatform</groupId>
+        <artifactId>training-platform</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>app</artifactId>
+    <name>app</name>
+    <description>Composition root: the single @SpringBootApplication that wires all domains on one port.</description>
+
+    <dependencies>
+        <!-- The app is the ONLY module that depends on -core modules; it assembles them. -->
+        <dependency>
+            <groupId>com.trainingplatform</groupId>
+            <artifactId>catalog-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.trainingplatform</groupId>
+            <artifactId>enrollments-core</artifactId>
+        </dependency>
+
+        <!-- Runtime infrastructure lives here, not in the domains. -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Tests: integration (happy path) + ArchUnit (dependency-rule enforcement). -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit-junit5</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Only the app is a bootable jar. -core / -api modules stay plain libraries. -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

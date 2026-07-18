@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: training-platform
+
+  datasource:
+    # In-memory H2 for the exercise. Swap this block for a Postgres URL and the app is unchanged;
+    # the migrations are written in portable SQL.
+    url: jdbc:h2:mem:trainingdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: ""
+    driver-class-name: org.h2.Driver
+
+  flyway:
+    # One migration location per domain, so each domain owns its schema history alongside its code.
+    # Adding a domain adds a location here (a config change), never a change to another domain.
+    locations:
+      - classpath:db/migration/catalog
+      - classpath:db/migration/enrollments
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      # Flyway owns the schema; Hibernate only validates that entities match it (fails fast on drift).
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8080
