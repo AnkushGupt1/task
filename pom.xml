@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+        <relativePath/>
+    </parent>
+
+    <groupId>com.trainingplatform</groupId>
+    <artifactId>training-platform</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <name>training-platform</name>
+    <description>Tiny training platform: catalog + enrollments, split into api/core modules</description>
+
+    <!--
+      Module layout. Each business domain is a pair of modules:
+        <domain>-api  : contracts only (interfaces, immutable DTOs, domain-event records). JDK + common only.
+        <domain>-core : entities, repositories, services, controllers, migrations. May depend on OTHER domains' -api.
+      A single `app` module owns the @SpringBootApplication and wires everything on one port.
+      `common` is a tiny JDK-only module holding the cross-domain event abstraction.
+
+      Dependency rules are enforced by the build (a -core simply does not declare another -core as a dependency)
+      and re-checked at the class level by an ArchUnit test in the app module.
+    -->
+    <modules>
+        <module>common</module>
+
+        <module>catalog-api</module>
+        <module>catalog-core</module>
+
+        <module>enrollments-api</module>
+        <module>enrollments-core</module>
+
+        <module>app</module>
+    </modules>
+
+    <properties>
+        <java.version>21</java.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <archunit.version>1.3.0</archunit.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Internal modules, versioned once here so children omit versions. -->
+            <dependency>
+                <groupId>com.trainingplatform</groupId>
+                <artifactId>common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.trainingplatform</groupId>
+                <artifactId>catalog-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.trainingplatform</groupId>
+                <artifactId>catalog-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.trainingplatform</groupId>
+                <artifactId>enrollments-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.trainingplatform</groupId>
+                <artifactId>enrollments-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.tngtech.archunit</groupId>
+                <artifactId>archunit-junit5</artifactId>
+                <version>${archunit.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+</project>
