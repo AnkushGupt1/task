@@ -1,0 +1,639 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "Training Platform API",
+    "description": "Complete Postman collection for the Take-Home Exercise (Training Platform).\n\n**Base URL:** `{{baseUrl}}` (default `http://localhost:8080`)\n\n**Auth:** None — all endpoints are public.\n\n**Suggested happy-path order:**\n1. Create Course → saves `courseId`\n2. Publish Course\n3. Get Course\n4. Enroll Visitor → saves `enrollmentId`\n5. List Enrollments\n\n**Docs:** Swagger UI at `{{baseUrl}}/swagger-ui.html`",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "courseId",
+      "value": ""
+    },
+    {
+      "key": "enrollmentId",
+      "value": ""
+    },
+    {
+      "key": "visitorName",
+      "value": "Ada Lovelace"
+    },
+    {
+      "key": "visitorEmail",
+      "value": "ada@example.com"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Catalog — Courses",
+      "description": "Create, publish, and fetch courses under `/api/v1/courses`.",
+      "item": [
+        {
+          "name": "Create Course",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has course fields', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('id');",
+                  "    pm.expect(json).to.have.property('title');",
+                  "    pm.expect(json).to.have.property('city');",
+                  "    pm.expect(json).to.have.property('capacity');",
+                  "    pm.expect(json).to.have.property('published');",
+                  "    pm.expect(json.published).to.eql(false);",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    const json = pm.response.json();",
+                  "    pm.collectionVariables.set('courseId', json.id);",
+                  "    console.log('Saved courseId =', json.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Event-Driven Java\",\n  \"city\": \"Berlin\",\n  \"capacity\": 2\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses"]
+            },
+            "description": "Create a new course in **draft** state (`published: false`).\n\n| Field | Type | Rules |\n|-------|------|-------|\n| `title` | string | required, not blank |\n| `city` | string | required, not blank |\n| `capacity` | int | required, min 1 |\n\n**Response:** `201 Created` + `CourseResponse`\n\n**Side effect:** Saves `courseId` collection variable from the response."
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Event-Driven Java\",\n  \"city\": \"Berlin\",\n  \"capacity\": 2\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/courses",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "courses"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"title\": \"Event-Driven Java\",\n  \"city\": \"Berlin\",\n  \"capacity\": 2,\n  \"published\": false\n}"
+            }
+          ]
+        },
+        {
+          "name": "Publish Course",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.collectionVariables.get('courseId')) {",
+                  "    console.warn('courseId is empty — run Create Course first.');",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Course is published', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.published).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/{{courseId}}/publish",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", "{{courseId}}", "publish"]
+            },
+            "description": "Publish a draft course so visitors can enroll.\n\n- Path: `id` = course UUID (`{{courseId}}`)\n- No request body\n- Idempotent if already published\n- **404** if course does not exist"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/courses/{{courseId}}/publish",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "courses", "{{courseId}}", "publish"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"title\": \"Event-Driven Java\",\n  \"city\": \"Berlin\",\n  \"capacity\": 2,\n  \"published\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Course by ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response id matches courseId', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.id).to.eql(pm.collectionVariables.get('courseId'));",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/{{courseId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", "{{courseId}}"]
+            },
+            "description": "Fetch a single course by UUID.\n\n- **200** + `CourseResponse`\n- **404** if not found"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Enrollments",
+      "description": "Enroll visitors and list enrollments under `/api/v1/enrollments`.\n\nBusiness rules on enroll:\n1. Course must exist → else **404**\n2. Course must be published → else **409**\n3. Seats taken < capacity → else **409**",
+      "item": [
+        {
+          "name": "Enroll Visitor",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (!pm.collectionVariables.get('courseId')) {",
+                  "    console.warn('courseId is empty — run Create Course + Publish Course first.');",
+                  "}"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 201 Created', function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response has enrollment fields', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.have.property('id');",
+                  "    pm.expect(json).to.have.property('courseId');",
+                  "    pm.expect(json).to.have.property('name');",
+                  "    pm.expect(json).to.have.property('email');",
+                  "    pm.expect(json).to.have.property('createdAt');",
+                  "});",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    const json = pm.response.json();",
+                  "    pm.collectionVariables.set('enrollmentId', json.id);",
+                  "    console.log('Saved enrollmentId =', json.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"{{visitorName}}\",\n  \"email\": \"{{visitorEmail}}\",\n  \"courseId\": \"{{courseId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/enrollments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "enrollments"]
+            },
+            "description": "Enroll a visitor into a **published** course that still has capacity.\n\n| Field | Type | Rules |\n|-------|------|-------|\n| `name` | string | required, not blank |\n| `email` | string | required, valid email |\n| `courseId` | UUID | required |\n\nOn success a confirmation email is logged by the notifications module (no HTTP API).\n\n**Side effect:** Saves `enrollmentId` collection variable."
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Ada Lovelace\",\n  \"email\": \"ada@example.com\",\n  \"courseId\": \"550e8400-e29b-41d4-a716-446655440000\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/enrollments",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "enrollments"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"7c9e6679-7425-40de-944b-e07fc1f90ae7\",\n  \"courseId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"name\": \"Ada Lovelace\",\n  \"email\": \"ada@example.com\",\n  \"createdAt\": \"2026-07-19T16:00:00Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "List Enrollments by Course",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 200 OK', function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test('Response is an array', function () {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/enrollments?courseId={{courseId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "enrollments"],
+              "query": [
+                {
+                  "key": "courseId",
+                  "value": "{{courseId}}",
+                  "description": "Required UUID of the course"
+                }
+              ]
+            },
+            "description": "List all enrollments for a course, ordered by `createdAt` ascending.\n\n- Query param `courseId` is **required**"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Negative Cases",
+      "description": "Expected error scenarios. Run after happy path, or use dedicated bodies.",
+      "item": [
+        {
+          "name": "Create Course — Invalid Body (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"\",\n  \"city\": \"Berlin\",\n  \"capacity\": 0\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses"]
+            },
+            "description": "Blank `title` and `capacity < 1` → **400** validation error."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Course — Not Found (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404 Not Found', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses/00000000-0000-0000-0000-000000000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "courses", "00000000-0000-0000-0000-000000000000"]
+            },
+            "description": "Unknown course UUID → **404**."
+          },
+          "response": []
+        },
+        {
+          "name": "Enroll — Course Not Found (404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 404 Not Found', function () {",
+                  "    pm.response.to.have.status(404);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ghost User\",\n  \"email\": \"ghost@example.com\",\n  \"courseId\": \"00000000-0000-0000-0000-000000000000\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/enrollments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "enrollments"]
+            },
+            "description": "Enroll into a non-existent course → **404**."
+          },
+          "response": []
+        },
+        {
+          "name": "Enroll — Draft Course (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 409 Conflict', function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Too Early\",\n  \"email\": \"early@example.com\",\n  \"courseId\": \"{{courseId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/enrollments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "enrollments"]
+            },
+            "description": "To reproduce: **Create Course** but do **not** Publish, then run this request (or point `courseId` at a draft course).\n\nUnpublished course → **409** `Course is not published`."
+          },
+          "response": []
+        },
+        {
+          "name": "Enroll — At Capacity (409)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 409 Conflict', function () {",
+                  "    pm.response.to.have.status(409);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Overflow Visitor\",\n  \"email\": \"overflow@example.com\",\n  \"courseId\": \"{{courseId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/enrollments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "enrollments"]
+            },
+            "description": "To reproduce: create a course with `capacity: 1`, publish it, enroll once successfully, then run this again.\n\nFull course → **409** `Course is at capacity`."
+          },
+          "response": []
+        },
+        {
+          "name": "Enroll — Invalid Email (400)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is 400 Bad Request', function () {",
+                  "    pm.response.to.have.status(400);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bad Email\",\n  \"email\": \"not-an-email\",\n  \"courseId\": \"{{courseId}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/enrollments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "enrollments"]
+            },
+            "description": "Invalid email format → **400** validation error."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Docs",
+      "description": "OpenAPI / Swagger endpoints (springdoc).",
+      "item": [
+        {
+          "name": "OpenAPI Spec (JSON)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v3/api-docs",
+              "host": ["{{baseUrl}}"],
+              "path": ["v3", "api-docs"]
+            },
+            "description": "Raw OpenAPI 3 JSON. Can also be imported into Postman via **Import → Link**."
+          },
+          "response": []
+        },
+        {
+          "name": "Swagger UI (browser)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/swagger-ui.html",
+              "host": ["{{baseUrl}}"],
+              "path": ["swagger-ui.html"]
+            },
+            "description": "Interactive Swagger UI — open this URL in a browser while the app is running."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

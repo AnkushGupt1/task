@@ -42,6 +42,14 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- Swagger UI for interactive API testing. Lives only here in the composition root;
+             springdoc discovers the -core controllers at runtime via Spring MVC's handler mapping,
+             so no domain module depends on it. UI: /swagger-ui.html  ·  spec: /v3/api-docs -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        </dependency>
+
         <!-- Tests: integration (happy path) + ArchUnit (dependency-rule enforcement). -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
